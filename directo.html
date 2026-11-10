@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cancha Abierta TV · directo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/directo.css">
+</head>
+<body>
+<div class="stage" aria-live="polite">
+  <div class="layer screen is-off" id="screen"></div>
+  <!-- Últimas acciones de cada equipo (hasta 2, la nueva encima), sobre SU mitad del marcador. -->
+  <div class="tks">
+    <div class="tk-stack" id="tkL"></div>
+    <div class="tk-stack" id="tkR"></div>
+  </div>
+  <div class="layer sb is-off" id="sb"></div>
+  <div class="layer wait is-off" id="wait"></div>
+</div>
+<p id="msg" hidden style="position:fixed;left:50%;top:40%;transform:translateX(-50%);background:rgb(10 12 18 / .9);color:#fff;padding:12px 16px;border-radius:10px;font:500 15px system-ui,sans-serif;max-width:90vw"></p>
+
+<div class="sim-bar" id="simBar" hidden>
+  <button id="simPlay" type="button"></button>
+  <button type="button" data-speed="1" aria-pressed="true">×1</button>
+  <button type="button" data-speed="2" aria-pressed="false">×2</button>
+  <button type="button" data-speed="5" aria-pressed="false">×5</button>
+  <input type="range" id="simRange" step="1" aria-label="Momento del partido">
+  <output id="simClock"></output>
+  <button type="button" data-jump="inicio">Previa</button>
+  <button type="button" data-jump="salto">Inicio</button>
+  <button type="button" data-jump="tm">TM</button>
+  <button type="button" data-jump="descanso">Descanso</button>
+  <button type="button" data-jump="tercero">Q3</button>
+  <button type="button" data-jump="final">Final</button>
+</div>
+<script type="module" src="js/directo.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+/* Páginas de Cancha Abierta TV (inicio y privacidad). Mismos tokens que la portada (index.html). */
+:root {
+  --sp-4: 4px; --sp-8: 8px; --sp-12: 12px; --sp-16: 16px; --sp-24: 24px; --sp-32: 32px; --sp-48: 48px;
+  --t-s: 0.8125rem; --t-m: 0.9375rem; --t-l: 1.125rem; --t-xl: 1.75rem; --t-xxl: 2.5rem;
+  --radius: 12px;
+  /* Colores del logo: azul marino, naranja, blanco (como la portada y la app). */
+  --bg: #0b1630; --surface: #14244a; --ink: #ffffff; --muted: #a9b6d3; --line: #263a68;
+  --accent: #f07c00; --navy: #0b1630; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 var(--t-m)/1.6 Inter, system-ui, sans-serif;
+}
+main { max-width: 760px; margin: 0 auto; padding: var(--sp-32) var(--sp-16) var(--sp-48); }
+.cab { display: flex; align-items: center; gap: var(--sp-16); margin-bottom: var(--sp-24); }
+.cab img { width: 88px; height: 88px; flex: none; }
+h1, h2 { font-family: "Barlow Condensed", Inter, sans-serif; font-weight: 800; line-height: 1.1; margin: 0; }
+h1 { font-size: var(--t-xxl); }
+h2 { font-size: var(--t-xl); margin: var(--sp-32) 0 var(--sp-12); }
+.sub { color: var(--muted); margin: var(--sp-4) 0 0; }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: var(--sp-16) var(--sp-24); margin: var(--sp-12) 0;
+}
+.card p:first-child, .card ul:first-child { margin-top: 0; }
+.card p:last-child, .card ul:last-child { margin-bottom: 0; }
+ul { padding-left: var(--sp-24); }
+li + li { margin-top: var(--sp-8); }
+a { color: var(--accent); }
+.pie { margin-top: var(--sp-48); color: var(--muted); font-size: var(--t-s); }

@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<script src="js/acceso.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Busca tu partido · Cancha Abierta TV</title>
+<script>if (window.FabScoreCamara) document.documentElement.classList.add('app');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sp-4: 4px; --sp-8: 8px; --sp-12: 12px; --sp-16: 16px; --sp-24: 24px; --sp-32: 32px;
+    --t-s: 0.8125rem; --t-m: 0.9375rem; --t-l: 1.125rem; --t-xl: 1.75rem;
+    --radius: 12px;
+    /* Colores del logo de Cancha Abierta TV (azul marino, naranja, blanco): web y app iguales. */
+    --bg: #0b1630; --surface: #14244a; --ink: #ffffff; --muted: #a9b6d3; --line: #263a68;
+    --accent: #f07c00; --accent-ink: #0b1630; --ok: #2fbf71; color-scheme: dark;
+    --court: #c98a4b;
+  }
+  * { box-sizing: border-box; }
+  /* `hidden` tiene que ganar a los display de las clases (.list es grid). */
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 400 var(--t-m)/1.5 Inter, system-ui, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: var(--sp-24) var(--sp-16) var(--sp-32); }
+  h1 { font: 800 var(--t-xl)/1.1 'Barlow Condensed', sans-serif; letter-spacing: .01em; margin: 0 0 var(--sp-4); text-transform: uppercase; }
+  .lede { color: var(--muted); margin: 0 0 var(--sp-24); }
+  h2 { font: 700 var(--t-l)/1.2 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .04em; margin: var(--sp-24) 0 var(--sp-8); display: flex; gap: var(--sp-8); align-items: baseline; }
+  h2 .n { color: var(--accent); }
+  .step[hidden] { display: none; }
+  .row { display: flex; gap: var(--sp-8); }
+  input[type="search"], input[type="text"], select {
+    flex: 1; min-width: 0; font: inherit; color: inherit; background: var(--surface);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-12) var(--sp-16);
+  }
+  input[type="color"] { width: 52px; height: 48px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: var(--sp-4); }
+  button {
+    font: 600 var(--t-m) Inter, sans-serif; border: 0; border-radius: var(--radius); cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); padding: var(--sp-12) var(--sp-16);
+  }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .list { display: grid; gap: var(--sp-8); margin: var(--sp-12) 0 0; padding: 0; list-style: none; }
+  .list button {
+    width: 100%; text-align: left; background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); font-weight: 500; display: flex; justify-content: space-between; gap: var(--sp-4) var(--sp-12); align-items: center;
+    flex-wrap: wrap; min-width: 0; overflow-wrap: anywhere;
+  }
+  .list button:hover, .list button[aria-pressed="true"] { border-color: var(--accent); }
+  .list small { color: var(--muted); font-weight: 400; font-size: var(--t-s); }
+  .list .today { color: var(--ok); font-weight: 600; }
+  .chosen { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-8); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-8) var(--sp-8) var(--sp-8) var(--sp-16); }
+  .chosen button { padding: var(--sp-8) var(--sp-12); }
+  .field { display: grid; gap: var(--sp-4); margin-top: var(--sp-12); }
+  .field > span { font-size: var(--t-s); color: var(--muted); font-weight: 500; }
+  .seg { display: flex; flex-wrap: wrap; gap: var(--sp-8); }
+  .seg label { display: inline-flex; align-items: center; gap: var(--sp-8); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: var(--sp-8) var(--sp-12); cursor: pointer; font-size: var(--t-s); }
+  .seg input { accent-color: var(--accent); }
+  .hint { font-size: var(--t-s); color: var(--muted); margin: var(--sp-8) 0 0; }
+  .status { font-size: var(--t-s); color: var(--muted); min-height: 1.5em; margin-top: var(--sp-8); }
+  .status.err { color: #c62828; }
+
+  .out { display: grid; gap: var(--sp-16); margin-top: var(--sp-12); }
+  .out-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .out-card header { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-8); padding: var(--sp-12) var(--sp-16); }
+  .out-card header strong { font: 700 var(--t-l) 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .03em; }
+  .out-card header button { padding: var(--sp-8) var(--sp-12); font-size: var(--t-s); }
+  .url { margin: 0 var(--sp-16) var(--sp-12); font: 400 var(--t-s)/1.4 ui-monospace, Consolas, monospace; color: var(--muted); word-break: break-all; }
+  /* Vista previa sobre un "parqué" para ver el rótulo como en el directo. */
+  .preview {
+    position: relative; aspect-ratio: 16 / 9; width: 100%;
+    background:
+      linear-gradient(180deg, rgb(0 0 0 / .35), rgb(0 0 0 / 0) 40%),
+      repeating-linear-gradient(90deg, #c98a4b 0 38px, #bf8044 38px 76px);
+  }
+  .preview iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent;
+    color-scheme: normal; /* el del widget: si no coincide con el oscuro de la página, el iframe sale opaco (blanco) */ }
+  .preview--tall iframe { inset: 0 auto 0 0; }
+  details.help { margin-top: var(--sp-24); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--sp-12) var(--sp-16); }
+  details.help summary { cursor: pointer; font-weight: 600; }
+  details.help ol { padding-left: var(--sp-24); margin: var(--sp-8) 0 0; }
+</style>
+<style>
+  .badge { display: inline-block; font-size: var(--t-s); font-weight: 600; border-radius: 999px; padding: 0 var(--sp-8); background: var(--line); color: var(--ink); }
+  .badge--live { background: #e23d3d; color: #fff; }
+  .match-btn { flex-direction: column; align-items: stretch !important; gap: var(--sp-4) !important; }
+  .match-btn .teams { font-weight: 600; }
+  .note { margin: 0 var(--sp-16) var(--sp-12); font-size: var(--t-s); color: var(--muted); }
+  .sim-link { display: inline-block; font-weight: 600; color: var(--accent-ink); background: var(--accent); border-radius: var(--radius); padding: var(--sp-8) var(--sp-16); text-decoration: none; }
+  .crest { width: 22px; height: 22px; object-fit: contain; vertical-align: -5px; margin-right: var(--sp-4); background: #fff; border-radius: 4px; }
+  .match-btn .meta { display: flex; flex-wrap: wrap; gap: var(--sp-8); align-items: center; color: var(--muted); font-size: var(--t-s); }
+  .alt { margin-top: var(--sp-24); }
+  .alt > button { width: 100%; }
+  .names { display: grid; grid-template-columns: 1fr; gap: var(--sp-12); }
+  @container (min-width: 560px) { .names { grid-template-columns: 1fr 1fr; } }
+  #s4 { container-type: inline-size; }
+  main { container-type: inline-size; }
+  @container (min-width: 620px) { .list { grid-template-columns: 1fr 1fr; } }
+
+  /* Dentro de CanchaAbiertaTV: colores del logo (azul marino, naranja, blanco) y su cabecera. */
+  .brand { display: flex; align-items: center; gap: var(--sp-12); margin-bottom: var(--sp-4); }
+  html:not(.app) .app-only, html.app .web-only { display: none !important; }
+  a.brand { color: inherit; text-decoration: none; }
+  html.app a.brand { pointer-events: none; }   /* en la app, el logo no saca del buscador */
+  .brand img { width: 56px; height: 56px; flex: none; }
+  /* En la app (horizontal, poca altura): todo lo de buscar a la vista sin scroll. */
+  html.app main { padding-top: var(--sp-12); }
+  html.app .brand img { width: 40px; height: 40px; }
+  html.app .lede { display: none; }
+  html.app h2 { margin-top: var(--sp-12); }
+  html.app .alt { margin-top: var(--sp-12); }
+  .brand h1 { margin: 0; }
+  .demos .tag { color: var(--accent); font-weight: 700; text-transform: uppercase; font-size: var(--t-s); letter-spacing: .04em; }
+</style>
+</head>
+<body>
+<main>
+  <a class="brand" href="./" aria-label="Cancha Abierta TV: inicio"><img src="canchaabiertatv/logo.png" alt="" width="40" height="40"><h1>Cancha Abierta TV</h1></a>
+  <p class="lede">El marcador de tu partido, con los datos del acta digital, para emitir en directo con la app Cancha Abierta TV o en PRISM u OBS. Se actualiza solo durante el partido.</p>
+
+  <!-- ── Camino principal: buscar el PARTIDO ─────────────────────────────── -->
+  <section class="step" id="m1">
+    <h2><span class="n">1</span> Busca el partido</h2>
+    <form class="row" id="matchForm">
+      <input type="search" id="matchText" placeholder="Club y, si quieres, rival: «El Palo Novaschool»" autocomplete="off" required minlength="3">
+      <button type="submit">Buscar</button>
+    </form>
+    <p class="hint">Salen todos los partidos de hoy.</p>
+    <div class="status" id="matchFound"></div>
+    <ul class="list" id="foundList"></ul>
+    <div class="alt">
+      <button class="ghost" id="toSim">Simular un partido ya jugado (para probar sin partido hoy)</button>
+    </div>
+  </section>
+
+  <!-- ── Ensayo: dos partidos FICTICIOS fijos (demo/ficticio*.json de nuestra web): ensayar no llama
+       a la API de la federación (Luismi, 13-11). ── -->
+  <section class="step" id="sim" hidden>
+    <h2><span class="n">1</span> Elige un partido de ensayo</h2>
+    <p class="hint" id="simHint"></p>
+    <ul class="list demos" id="simList"></ul>
+    <div class="alt"><button class="ghost" id="simBack">Volver a buscar un partido</button></div>
+  </section>
+
+  <!-- ── Aspecto y enlaces (común) ───────────────────────────────────────── -->
+  <section class="step" id="s4" hidden>
+    <h2><span class="n">2</span> Aspecto</h2>
+    <div class="chosen"><span id="chosen"></span></div>
+    <p class="hint" id="chosenHint"></p>
+    <div class="names">
+      <label class="field"><span id="ownLabel">Nombre de tu equipo en el rótulo</span>
+        <input type="text" id="ownName" maxlength="24">
+      </label>
+      <label class="field" id="rivalField"><span>Nombre del rival en el rótulo</span>
+        <input type="text" id="rivalName" maxlength="24">
+      </label>
+    </div>
+    <div class="field"><span>Color de tu equipo</span>
+      <div class="row"><input type="color" id="ownColor" value="#f07c00"><span class="seg"><label><input type="checkbox" id="ownColorFab" checked> El del acta digital</label></span></div>
+    </div>
+    <h2 id="widgetTitle"><span class="n">3</span> El widget para PRISM</h2>
+    <div class="out" id="out"></div>
+
+    <details class="help">
+      <summary>Cómo meterlo en PRISM (móvil)</summary>
+      <ol>
+        <li>En la emisión, desliza a la derecha y entra en <b>Widget → Web</b>.</li>
+        <li>Pega el enlace en <b>URL</b> y ponle un título (Cancha Abierta TV).</li>
+        <li>Estíralo a <b>pantalla completa</b> y activa <b>Bloquear capa</b>.</li>
+        <li>Ya está: el widget va solo. Antes del salto, las plantillas; durante el partido, el marcador con cada acción; al empezar cada cuarto, las que están en pista; en los tiempos muertos, sus números; en el descanso y al final, las estadísticas.</li>
+      </ol>
+      <p class="hint">Para probarlo sin partido en directo, «Simular» reproduce un partido de ensayo (ficticio) con el parqué de fondo.</p>
+    </details>
+  </section>
+</main>
+
+<script type="module">
+  import { api as apiLocal } from './js/cliente.mjs';
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  // link: lo que identifica el partido en los enlaces (ids estables, nunca tokens de la federación):
+  //   { club, b, partido }. En directo, SOLO el partido del día (13-11: fuera «toda la temporada»).
+  const state = { link: null, ownDefault: '', rivalDefault: '' };
+
+  // Dentro de la app de cámara (android/): la app inyecta este puente y el enlace vuelve a ella
+  // en vez de copiarse. Misma página, mismo flujo: nada duplicado.
+  const APP = window.FabScoreCamara ?? null;
+  if (APP) {
+    // La clase «app» y la cabecera ya van en el <head> y el CSS.
+    document.querySelector('.lede').textContent = 'Elige el partido y cómo se ve el marcador. Saldrá encima de la cámara.';
+    document.querySelector('details.help').hidden = true;
+    document.querySelectorAll('#s4 h2')[1].lastChild.textContent = ' El marcador';
+  }
+
+  async function api(path, params) {
+    const res = await apiLocal(path, params);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'No hay respuesta de los datos del partido. Prueba otra vez.');
+    return data;
+  }
+
+  function setStatus(id, text, err = false) {
+    $(id).className = `status${err ? ' err' : ''}`;
+    $(id).textContent = text;
+  }
+
+  // Nombre corto por defecto: sin patrocinador tras « - » y sin coletillas de patrocinio
+  // habituales. Siempre se puede corregir a mano.
+  function shortName(full) {
+    let n = String(full || '').split(/\s+-\s+/)[0];
+    n = n.replace(/\s+(LA F[AÁ]BRICA DE M[AÁ]LAGA|FUNDACI[OÓ]N UNICAJA|BASKET4LIFE)$/i, '');
+    return n.trim().toUpperCase();
+  }
+
+  function when(m) {
+    const d = m.inicio ? new Date(m.inicio) : null;
+    if (!d) return `${m.fecha} ${m.hora}`;
+    const today = new Date();
+    const sameDay = d.toDateString() === today.toDateString();
+    const tomorrow = new Date(today.getTime() + 864e5).toDateString() === d.toDateString();
+    return `${sameDay ? 'Hoy' : tomorrow ? 'Mañana' : d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })} · ${m.hora}`;
+  }
+
+  const crest = (src) => (src ? `<img class="crest" src="${esc(src)}" alt="" onerror="this.remove()">` : '');
+
+  function badge(m) {
+    if (/terminad|finaliz/i.test(m.estado)) return `<span class="badge">${m.resultado ? esc(m.resultado) : 'Terminado'}</span>`;
+    const t = m.inicio ? Date.parse(m.inicio) : NaN;
+    if (Number.isFinite(t) && t <= Date.now()) return '<span class="badge badge--live">Puede estar en juego</span>';
+    return '';
+  }
+
+  // ── Buscar partido ──
+  $('matchForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('foundList').innerHTML = '';
+    $('s4').hidden = true;
+    setStatus('matchFound', 'Buscando…');
+    try {
+      const data = await api('/api/buscar', { texto: $('matchText').value.trim() });
+      const list = data.partidos;
+      if (!data.club) { setStatus('matchFound', 'No encuentro ningún club con ese nombre.', true); return; }
+      const filtro = data.filtro ? ` con «${data.filtro}»` : '';
+      setStatus('matchFound', list.length
+        ? `${list.length} partido${list.length > 1 ? 's' : ''} de «${data.club}»${filtro}.`
+        : `«${data.club}» no tiene partidos${filtro} hoy.`);
+      const multiClub = new Set(list.map((m) => m.club)).size > 1;
+      $('foundList').innerHTML = list.map((m, i) => `
+        <li><button class="match-btn" data-i="${i}" aria-pressed="false">
+          <span class="teams">${crest(m.escudoLocal)}${esc(m.local)} – ${crest(m.escudoVisitante)}${esc(m.visitante)}</span>
+          <span class="meta"><span>${esc(when(m))}</span><span>${esc(m.categoria)}</span>${multiClub ? `<span>${esc(m.delegacion)}</span>` : ''}${badge(m)}</span>
+        </button></li>`).join('');
+      $('foundList').querySelectorAll('button').forEach((btn) => btn.addEventListener('click', () => {
+        $('foundList').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        pickMatch(list[btn.dataset.i]);
+      }));
+    } catch (err) {
+      setStatus('matchFound', err.message, true);
+    }
+  });
+
+  function pickMatch(m) {
+    state.link = { club: m.club, b: m.b, partido: m.partido };
+    const own = m.lado === 'visitante' ? m.visitante : m.local;
+    const rival = m.lado === 'visitante' ? m.local : m.visitante;
+    state.ownDefault = shortName(own);
+    state.rivalDefault = shortName(rival);
+    $('ownName').value = state.ownDefault;
+    $('rivalName').value = state.rivalDefault;
+    $('rivalField').hidden = false;
+    $('ownLabel').textContent = `Nombre de ${own} en el rótulo`;
+    $('chosen').innerHTML = `<span><b>${esc(m.local)} – ${esc(m.visitante)}</b><br>${esc(when(m))} · ${esc(m.categoria)}</span>`;
+    $('chosenHint').textContent = 'Enlace para ESTE partido. El rótulo enseña la previa hasta que la mesa abra el acta.';
+    $('s4').hidden = false;
+    render();
+    $('s4').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── Simular: dos ensayos FICTICIOS fijos ──
+  // Partidos ya jugados del Palo (N1 y cadete) pasados por js/ficticio.mjs y guardados como demo
+  // (scripts/demo-ficticia.mjs): el widget los lee de nuestra web, sin llamar a la API (13-11).
+  const SIM_DEMOS = [
+    { tag: 'Nacional · N1 Femenina', demo: 'ficticio', resultado: '53-73' },
+    { tag: 'Cantera · Cadete Femenino', demo: 'ficticio-cantera', resultado: '62-34' },
+  ];
+  const ENSAYO = { local: 'CB SIERRA NEVADA', visitante: 'CB COSTA DEL SOL' };
+  const demoUrl = (demo) => `${new URL('directo.html', location.href)}?${new URLSearchParams({ demo, ...(APP ? { limpio: '1' } : {}) })}`;
+  $('toSim').addEventListener('click', () => {
+    $('m1').hidden = true; $('s4').hidden = true; $('sim').hidden = false;
+    $('simHint').textContent = APP
+      ? 'Se reproduce a su hora real encima de la cámara, como si fuera en directo. Equipos, jugadoras y fotos son ficticios.'
+      : 'Se reproduce a su hora real sobre un parqué, con controles de velocidad y saltos. Equipos, jugadoras y fotos son ficticios.';
+    $('simList').innerHTML = SIM_DEMOS.map((m, i) => `
+      <li><button class="match-btn" data-d="${i}">
+        <span class="teams"><span class="tag">${esc(m.tag)}</span><br>${esc(ENSAYO.local)} – ${esc(ENSAYO.visitante)}</span>
+        <span class="meta"><span class="badge">${esc(m.resultado)}</span><span>${APP ? 'Ensayar en la cámara' : 'Simular ▶'}</span></span>
+      </button></li>`).join('');
+    $('simList').querySelectorAll('[data-d]').forEach((btn) => btn.addEventListener('click', () => {
+      const url = demoUrl(SIM_DEMOS[btn.dataset.d].demo);
+      if (APP) APP.usar(url, `${ENSAYO.local} – ${ENSAYO.visitante}`);
+      else window.open(url, '_blank', 'noopener');
+    }));
+  });
+  $('simBack').addEventListener('click', () => { $('sim').hidden = true; $('m1').hidden = false; });
+
+  ['ownName', 'rivalName', 'ownColor', 'ownColorFab'].forEach((id) => $(id).addEventListener('input', render));
+
+  function baseParams() {
+    const p = { ...state.link };
+    // Los nombres viajan SIEMPRE: el corto de aquí quita patrocinios que el servidor no conoce.
+    const own = $('ownName').value.trim();
+    if (own) p.nombre = own;
+    const rival = $('rivalName').value.trim();
+    if (rival) p.rnombre = rival;
+    if (!$('ownColorFab').checked) p.color = $('ownColor').value.replace('#', '');
+    return p;
+  }
+
+  let renderTimer = null;
+  function render() {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(renderNow, 250);
+  }
+
+  function renderNow() {
+    if (!state.link) return;
+    const base = baseParams();
+    // Relativo a ESTA página: así vale igual en la raíz del dominio que en una subcarpeta.
+    const at = (page) => new URL(page, location.href).href;
+    // UN solo widget (Luismi, 07-11): el enlace se pone una vez en PRISM y va solo.
+    const url = `${at('directo.html')}?${new URLSearchParams(base)}`;
+    const items = [{ title: 'Cancha Abierta TV', url }];
+    if (APP) {
+      const titulo = $('chosen').querySelector('b')?.textContent ?? '';
+      // Ensayo: el partido ficticio de N1, sin parqué ni controles (transparente sobre la cámara).
+      const ensayo = demoUrl('ficticio');
+      $('out').innerHTML = `
+        <article class="out-card">
+          <header><strong>Marcador del partido</strong><button data-app="${esc(url)}">Usar en la cámara</button></header>
+          <p class="note">Las plantillas aparecen cuando la mesa abre el acta; hasta entonces, la previa del marcador.</p>
+          <header><button class="ghost" data-app="${esc(ensayo)}">Ensayar en la cámara (partido ficticio)</button></header>
+        </article>`;
+      $('out').querySelectorAll('[data-app]').forEach((btn) => btn.addEventListener('click', () => APP.usar(btn.dataset.app, titulo)));
+      return;
+    }
+    $('out').innerHTML = `
+      <article class="out-card">
+        <header><strong>${items[0].title}</strong><button data-copy="0">Copiar enlace</button></header>
+        <p class="url">${esc(url)}</p>
+        <p class="note">Las plantillas aparecen cuando la mesa abre el acta (unos minutos antes del salto); hasta entonces, la previa del marcador.</p>
+        <div class="preview"><iframe src="${esc(url)}" title="Vista previa del widget"></iframe></div>
+      </article>`;
+    $('out').querySelectorAll('[data-copy]').forEach((btn) => btn.addEventListener('click', async () => {
+      const url = items[btn.dataset.copy].url;
+      try { await navigator.clipboard.writeText(url); btn.textContent = 'Copiado ✓'; }
+      catch { prompt('Copia el enlace:', url); }
+      setTimeout(() => { btn.textContent = 'Copiar enlace'; }, 1800);
+    }));
+  }
+</script>
+</body>
+</html>

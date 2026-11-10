@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Acceso · Cancha Abierta TV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #0b1426; --card: #121e36; --line: #24324f; --text: #eef2fa; --muted: #9aa8c4; --accent: #f07c00; --err: #ff7a7a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px;
+    background: var(--bg); color: var(--text); font: 16px/1.5 Inter, system-ui, sans-serif; }
+  form { width: 100%; max-width: 360px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; padding: 28px 24px; display: grid; gap: 14px; }
+  h1 { margin: 0; font: 800 28px/1.1 'Barlow Condensed', sans-serif; letter-spacing: .02em; text-transform: uppercase; }
+  p { margin: 0; color: var(--muted); font-size: 14px; }
+  input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--text); font: inherit; }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button { padding: 12px 14px; border: 0; border-radius: 999px; background: var(--accent);
+    color: #1a0e00; font: 600 16px Inter, sans-serif; cursor: pointer; }
+  .err { color: var(--err); min-height: 1.5em; }
+</style>
+</head>
+<body>
+<form id="f" autocomplete="on">
+  <h1>Cancha Abierta TV</h1>
+  <p>Web privada por ahora. Escribe la contraseña para entrar.</p>
+  <input id="clave" type="password" name="password" autocomplete="current-password" placeholder="Contraseña" required autofocus>
+  <label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--muted)">
+    <input id="recordar" type="checkbox" checked style="width:auto"> Recordar en este dispositivo
+  </label>
+  <button type="submit">Entrar</button>
+  <p class="err" id="err" role="alert"></p>
+</form>
+<script>
+  var HASH = '44407a4f06c0092b913c93ec9dbee9b560cfb9cabbb71841bbced079d3b6a465';
+  var KEY = 'cancha-abierta:acceso';
+  function destino() {
+    var v = new URLSearchParams(location.search).get('v') || 'index.html';
+    // Solo rutas de esta web: nada de «//otro.sitio» ni esquemas.
+    if (/^[a-z]+:|^\/\//i.test(v) || v.indexOf('acceso.html') === 0) v = 'index.html';
+    return v.replace(/^\/+/, '');
+  }
+  async function sha256(t) {
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+    return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+  document.getElementById('f').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var h = await sha256('cancha-abierta:' + document.getElementById('clave').value.trim());
+    if (h !== HASH) { document.getElementById('err').textContent = 'Contraseña incorrecta.'; return; }
+    var store = document.getElementById('recordar').checked ? 'localStorage' : 'sessionStorage';
+    try { window[store].setItem(KEY, HASH); } catch (err) { /* sin almacenamiento: entra igual esta vez */ }
+    location.replace(destino());
+  });
+</script>
+</body>
+</html>
