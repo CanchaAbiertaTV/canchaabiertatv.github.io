@@ -1,0 +1,10 @@
+# Web privada por ahora. Google y Bing entran solo para leer el «noindex» de cada página
+# (si se les bloquea aquí, no lo ven y pueden dejar la dirección en el buscador).
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: *
+Disallow: /
